@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Shared playlist</title>
+        <link rel="stylesheet" href="main.css">
+    </head>
+    <body>
+        <div class="container">
+            <div class="control-panel">
+                <div class="controls">
+                    <div class="toolbar">
+                        <button type="button" id="playBtn">Play</button>
+                        <button type="button" id="pauseBtn">Pause</button>
+                        <button type="button" id="nextBtn">Next</button>
+                        <button type="button" id="prevBtn">Previous</button>
+                    </div>
+                </div>
+                
+                <ul id="trackList" class="track-list">
+                    <li class="track" data-video-id="_jQNSxYlx9U">_jQNSxYlx9U</li>
+                    <li class="track" data-video-id="KDxJlW6cxRk">KDxJlW6cxRk</li>
+                    <li class="track" data-video-id="tD4HCZe-tew">tD4HCZe-tew</li>
+                </ul>
+                <form id="trackAddForm" class="track-add-controls">
+                    <input placeholder="Insert Youtube video url here" type="text" name="video_url" id="videoURLInput" class="url-input">
+                    <button class="add-video-btn" id="addVideoBtn">Enqueue</button>
+                </form>
+            </div>
+            <div id="player" class="video-container"></div>
+        </div>
+        <template id="trackItemTemplate">
+            <li class="track" tabindex="0">
+                <div class="user-badge">[Oleg]</div>
+                <span class="video-title"></span>
+            </li>
+        </template>
+        <!-- Youtube player loader -->
+        <script>
+            var tag = document.createElement('script');
+
+            tag.src = "https://www.youtube.com/iframe_api";
+            var firstScriptTag = document.getElementsByTagName('script')[0];
+            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        </script>
+        <script src="app.js"></script>
+    </body>
+</html>

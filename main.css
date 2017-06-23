@@ -1,0 +1,64 @@
+html, body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+}
+
+.container {
+    display: flex;
+    height: 100%;
+}
+
+.control-panel {
+    display: flex;
+    flex-direction: column;
+    margin-right: 40px; 
+}
+
+.track-list {
+    list-style: none;
+    background: rgb(232, 232, 232);
+    padding-left: 0;
+    width: 400px;
+    min-height: 200px;
+    flex: 1 1 auto;
+    margin: 0;
+    overflow: auto;
+}
+
+.track {
+    padding: 8px 10px;
+    border-bottom: 1px solid rgb(208, 208, 208);
+}
+
+.video-container {
+    margin: auto;
+}
+
+.url-input {
+    height: 20px;
+    flex: 1 1 auto;
+    margin: 0;
+}
+
+.track-add-controls {
+    display: flex;
+}
+
+.add-video-btn {
+    margin: 0;
+}
+
+.toolbar {
+    padding: 10px;
+}
+
+.track.selected {
+    background: rgba(179, 198, 255, 0.56);
+}
+
+.controls {
+    background: gold;
+}
