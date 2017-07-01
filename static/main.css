@@ -104,6 +104,10 @@ body {
     height: 18px;
     font-size: 0;
     margin: 0 5px;
+    background-position: center center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-color: transparent;
 }
 
 .player-button:active {
@@ -111,17 +115,17 @@ body {
 }
 
 .btn-play {
-    background: url("icons/play.svg") center center / contain no-repeat;
+    background-image: url("icons/play.svg");
 }
 
 .btn-forward {
-    background: url("icons/forward.svg") center center / contain no-repeat;
+    background-image: url("icons/forward.svg");
 }
 
 .btn-backward {
-    background: url("icons/backward.svg") center center / contain no-repeat;
+    background-image: url("icons/backward.svg");
 }
 
 .btn-pause {
-    background: url("icons/pause.svg") center center / contain no-repeat;
+    background-image: url("icons/pause.svg");
 }

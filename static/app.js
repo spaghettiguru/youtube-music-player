@@ -6,6 +6,10 @@
     var userInfoElement = document.querySelector(".user-info");
     userInfoElement.innerHTML = `Shalom, <span class="user-name">${userName}</span>!`;
 
+    if (window.Notification && Notification.permission !== "granted") {
+        Notification.requestPermission();
+    }
+
     const socket = io({
         query: {
             userName: userName
@@ -123,6 +127,10 @@
             trackList.appendChild(newTrackElement);
             urlInput.value = "";
             newTrackElement.scrollIntoView();
+
+            if (Notification && Notification.permission == "granted" && userName !== trackData.addedBy) {
+                new Notification(trackData.addedBy + " added new track");
+            }
     });
 
     socket.on('track list', function onTrackListRecieved(tracks) {
