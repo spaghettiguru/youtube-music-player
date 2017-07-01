@@ -4,6 +4,7 @@ html, body {
 
 body {
     margin: 0;
+    font-family: Helvetica, Arial, sans-serif;
 }
 
 .container {
@@ -54,10 +55,14 @@ body {
 
 .add-video-btn {
     margin: 0;
+    background: rgb(235, 45, 22);
+    border: none;
+    color: white
 }
 
 .toolbar {
-    padding: 10px;
+    padding: 14px;
+    display: flex;
 }
 
 .track.selected {
@@ -71,6 +76,7 @@ body {
 .user-badge {
     font-size: smaller;
     color: darkgray;
+    margin-top: 4px;
 }
 
 .user-info {
@@ -85,4 +91,37 @@ body {
     text-overflow: ellipsis;
     white-space: nowrap;
     width: 100%;
+    font-size: 14px;
+}
+
+.user-name {
+    font-weight: bold;
+}
+
+.player-button {
+    border: none;
+    width: 20px;
+    height: 18px;
+    font-size: 0;
+    margin: 0 5px;
+}
+
+.player-button:active {
+    transform: scale(0.8);
+}
+
+.btn-play {
+    background: url("icons/play.svg") center center / contain no-repeat;
+}
+
+.btn-forward {
+    background: url("icons/forward.svg") center center / contain no-repeat;
+}
+
+.btn-backward {
+    background: url("icons/backward.svg") center center / contain no-repeat;
+}
+
+.btn-pause {
+    background: url("icons/pause.svg") center center / contain no-repeat;
 }

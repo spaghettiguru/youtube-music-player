@@ -9,18 +9,14 @@
             <div class="control-panel">
                 <div class="controls">
                     <div class="toolbar">
-                        <button type="button" id="playBtn">Play</button>
-                        <button type="button" id="pauseBtn">Pause</button>
-                        <button type="button" id="nextBtn">Next</button>
-                        <button type="button" id="prevBtn">Previous</button>
+                        <button class="player-button btn-play" type="button" id="playBtn">Play</button>
+                        <button class="player-button btn-pause" type="button" id="pauseBtn">Pause</button>
+                        <button class="player-button btn-backward" type="button" id="prevBtn">Previous</button>
+                        <button class="player-button btn-forward" type="button" id="nextBtn">Next</button>
                     </div>
                 </div>
                 
-                <ul id="trackList" class="track-list">
-                    <li class="track" data-video-id="_jQNSxYlx9U">_jQNSxYlx9U</li>
-                    <li class="track" data-video-id="KDxJlW6cxRk">KDxJlW6cxRk</li>
-                    <li class="track" data-video-id="tD4HCZe-tew">tD4HCZe-tew</li>
-                </ul>
+                <ul id="trackList" class="track-list"></ul>
                 <form id="trackAddForm" class="track-add-controls">
                     <input placeholder="Insert Youtube video url here" type="text" name="video_url" id="videoURLInput" class="url-input">
                     <button class="add-video-btn" id="addVideoBtn">Enqueue</button>

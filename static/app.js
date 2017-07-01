@@ -3,7 +3,8 @@
     "use strict";
 
     var userName = window.prompt("What's your name?", "anonymous");
-    var userInfoElement = document.querySelector(".user-info").textContent = `Shalom, ${userName}!`;
+    var userInfoElement = document.querySelector(".user-info");
+    userInfoElement.innerHTML = `Shalom, <span class="user-name">${userName}</span>!`;
 
     const socket = io({
         query: {
@@ -20,8 +21,8 @@
 
     window.onYouTubeIframeAPIReady = function() {
         player = new YT.Player('player', {
-            height: '300',
-            width: '500',
+            height: '400',
+            width: '600',
             //videoId: 'M7lc1UVf-VE',
             events: {
                 'onReady': onPlayerReady,
@@ -68,6 +69,14 @@
         //}
     }
 
+    function createTrackDOMStructure(url, userName) {
+        var newTrackElement = document.getElementById("trackItemTemplate").content.firstElementChild.cloneNode(true);
+            newTrackElement.querySelector(".video-title").textContent = url;
+            newTrackElement.querySelector(".user-badge").textContent = "[" + userName + "]";
+            newTrackElement.dataset.videoId = url.match(/youtube.com\/watch\?v=(.*)&?/)[1].split("&")[0];
+        return newTrackElement;
+    }
+
     var urlInput = document.getElementById("videoURLInput");
     var addVideoButton = document.getElementById("addVideoBtn");
 
@@ -78,20 +87,6 @@
         if (videoURL) {
             socket.emit("add track", {url: videoURL, addedBy: userName});
         }
-    });
-
-    socket.on('track added', function(trackData) {
-        var newTrackElement = document.getElementById("trackItemTemplate").content.firstElementChild.cloneNode(true);
-            newTrackElement.querySelector(".video-title").textContent = trackData.url;
-            newTrackElement.querySelector(".user-badge").textContent = "[" + trackData.addedBy + "]";
-            newTrackElement.dataset.videoId = trackData.url.match(/youtube.com\/watch\?v=(.*)&?/)[1].split("&")[0];
-            trackList.appendChild(newTrackElement);
-            urlInput.value = "";
-            newTrackElement.scrollIntoView();
-    });
-
-    socket.on('track list', function onTrackListRecieved(trackList) {
-        console.log(trackList);
     });
 
     document.getElementById("playBtn").addEventListener("click", function playBtnClickHandler(event) {
@@ -121,5 +116,20 @@
             player.loadVideoById(trackList.children[currentTrackIndex - 1].dataset.videoId);
             selectTrack(currentTrackIndex - 1);
         }
+    });
+
+    socket.on('track added', function onTrackAdded(trackData) {
+            var newTrackElement = createTrackDOMStructure(trackData.url, trackData.addedBy);
+            trackList.appendChild(newTrackElement);
+            urlInput.value = "";
+            newTrackElement.scrollIntoView();
+    });
+
+    socket.on('track list', function onTrackListRecieved(tracks) {
+        trackList.innerHTML = "";
+        tracks.forEach(function renderTrack(track) {
+            trackList.appendChild(createTrackDOMStructure(track.url, track.addedBy));
+        });
+        console.log(tracks);
     });
 })();
