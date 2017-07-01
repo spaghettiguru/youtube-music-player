@@ -128,6 +128,10 @@
             urlInput.value = "";
             newTrackElement.scrollIntoView();
 
+            getVideoNameById(newTrackElement.dataset.videoId).then(function(title) {
+                newTrackElement.querySelector(".video-title").textContent = title;
+            });
+
             if (Notification && Notification.permission == "granted" && userName !== trackData.addedBy) {
                 new Notification(trackData.addedBy + " added new track");
             }
@@ -138,6 +142,37 @@
         tracks.forEach(function renderTrack(track) {
             trackList.appendChild(createTrackDOMStructure(track.url, track.addedBy));
         });
+        youtubeAPIReady.then(getTrackNames);
         console.log(tracks);
+    });
+
+    function getTrackNames() {
+        for (let i = 0; i < trackList.children.length; i++) {
+            getVideoNameById(trackList.children[i].dataset.videoId).then(function(title) {
+                trackList.children[i].querySelector(".video-title").textContent = title;
+            });
+        }
+    }
+
+    function getVideoNameById(videoId) {
+        return gapi.client.youtube.videos.list({
+                id: videoId,
+                part: 'snippet'
+            }).then(function(response) {
+                return response.result.items[0].snippet['title'];
+            });
+    }
+
+    var youtubeAPIReady = new Promise(function(resolve, reject) {
+        function start() {
+            gapi.client.init({
+                'apiKey': 'AIzaSyAQUcx5pxoeQK5RRxUtKeKyPfKrcEZwkJI',
+                'discoveryDocs': ['https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest'],
+            }).then(function() {
+                resolve();
+            });
+        }
+
+        gapi.load('client', start);
     });
 })();
