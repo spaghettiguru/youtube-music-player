@@ -27,11 +27,12 @@
                 </form>
             </div>
             <div id="player" class="video-container"></div>
+            <div class="user-info"></div>
         </div>
         <template id="trackItemTemplate">
             <li class="track" tabindex="0">
-                <div class="user-badge">[Oleg]</div>
                 <span class="video-title"></span>
+                <div class="user-badge"></div>
             </li>
         </template>
         <!-- Youtube player loader -->
@@ -43,9 +44,6 @@
             firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
         </script>
         <script src="/socket.io/socket.io.js"></script>
-        <script>
-            const socket = io();
-        </script>
         <script src="app.js"></script>
     </body>
 </html>

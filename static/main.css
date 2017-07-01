@@ -31,6 +31,11 @@ body {
 .track {
     padding: 8px 10px;
     border-bottom: 1px solid rgb(208, 208, 208);
+    box-sizing: border-box;
+}
+
+.track:focus {
+    outline: 1px dotted black;
 }
 
 .video-container {
@@ -61,4 +66,23 @@ body {
 
 .controls {
     background: gold;
+}
+
+.user-badge {
+    font-size: smaller;
+    color: darkgray;
+}
+
+.user-info {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.video-title {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
 }
