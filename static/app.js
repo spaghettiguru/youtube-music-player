@@ -66,13 +66,17 @@
         var videoURL = urlInput.value;
         
         if (videoURL) {
-            var newTrackElement = document.getElementById("trackItemTemplate").content.firstElementChild.cloneNode(true);
-            newTrackElement.querySelector(".video-title").textContent = videoURL;
-            newTrackElement.dataset.videoId = videoURL.match(/youtube.com\/watch\?v=(.*)&?/)[1].split("&")[0];
+            socket.emit("add track", videoURL);
+        }
+    });
+
+    socket.on('track added', function(url) {
+        var newTrackElement = document.getElementById("trackItemTemplate").content.firstElementChild.cloneNode(true);
+            newTrackElement.querySelector(".video-title").textContent = url;
+            newTrackElement.dataset.videoId = url.match(/youtube.com\/watch\?v=(.*)&?/)[1].split("&")[0];
             trackList.appendChild(newTrackElement);
             urlInput.value = "";
             newTrackElement.scrollIntoView();
-        }
     });
 
     document.getElementById("playBtn").addEventListener("click", function playBtnClickHandler(event) {

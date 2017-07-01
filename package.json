@@ -1,0 +1,32 @@
+{
+  "name": "sharmuta-player",
+  "version": "0.1.0",
+  "description": "Player of Youtube videos which allows adding videos to the playlist by different users.",
+  "main": "server.js",
+  "dependencies": {
+    "express": "^4.15.2",
+    "http-server": "^0.10.0",
+    "socket.io": "^2.0.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/spaghettiguru/youtube-music-player.git"
+  },
+  "keywords": [
+    "youtube",
+    "player",
+    "playlist",
+    "socketio"
+  ],
+  "author": "Oleg Yuzvik",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/spaghettiguru/youtube-music-player/issues"
+  },
+  "homepage": "https://github.com/spaghettiguru/youtube-music-player#readme"
+}
