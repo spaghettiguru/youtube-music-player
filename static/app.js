@@ -128,8 +128,8 @@
             urlInput.value = "";
             newTrackElement.scrollIntoView();
 
-            getVideoNameById(newTrackElement.dataset.videoId).then(function(title) {
-                newTrackElement.querySelector(".video-title").textContent = title;
+            getVideosInfoByIds(newTrackElement.dataset.videoId).then(function(videos) {
+                newTrackElement.querySelector(".video-title").textContent = videos[0].snippet['title'];
             });
 
             if (Notification && Notification.permission == "granted" && userName !== trackData.addedBy) {
@@ -142,24 +142,35 @@
         tracks.forEach(function renderTrack(track) {
             trackList.appendChild(createTrackDOMStructure(track.url, track.addedBy));
         });
-        youtubeAPIReady.then(getTrackNames);
+        youtubeAPIReady.then(getAllTracksNames);
         console.log(tracks);
     });
 
-    function getTrackNames() {
+    function getAllTracksNames() {
+        var trackIDs = [];
         for (let i = 0; i < trackList.children.length; i++) {
-            getVideoNameById(trackList.children[i].dataset.videoId).then(function(title) {
-                trackList.children[i].querySelector(".video-title").textContent = title;
-            });
+            trackIDs.push(trackList.children[i].dataset.videoId);
         }
+
+        getVideosInfoByIds(trackIDs).then(function(videos) {
+            for (let i = 0; i < videos.length; i++) {
+                var track = trackList.querySelector('[data-video-id="' + videos[i].id + '"]');
+                if (track) {
+                    track.querySelector(".video-title").textContent = videos[i].snippet['title'];
+                }
+            }
+        });
     }
 
-    function getVideoNameById(videoId) {
+    function getVideosInfoByIds(videoId) {
+        if (Array.isArray(videoId)) {
+            videoId = videoId.join(",");
+        }
         return gapi.client.youtube.videos.list({
                 id: videoId,
                 part: 'snippet'
             }).then(function(response) {
-                return response.result.items[0].snippet['title'];
+                return response.result.items;
             });
     }
 
