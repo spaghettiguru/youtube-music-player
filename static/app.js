@@ -73,9 +73,9 @@
         //}
     }
 
-    function createTrackDOMStructure(url, userName) {
+    function createTrackDOMStructure(url, userName, title) {
         var newTrackElement = document.getElementById("trackItemTemplate").content.firstElementChild.cloneNode(true);
-            newTrackElement.querySelector(".video-title").textContent = url;
+            newTrackElement.querySelector(".video-title").textContent = title ? title : url;
             newTrackElement.querySelector(".user-badge").textContent = "[" + userName + "]";
             newTrackElement.dataset.videoId = url.match(/youtube.com\/watch\?v=(.*)&?/)[1].split("&")[0];
         return newTrackElement;
@@ -137,6 +137,15 @@
             }
     });
 
+    function addItemToPlaylist(title, playbackURL, addedBy, scrollToAddedItem) {
+        var newTrackElement = createTrackDOMStructure(playbackURL, addedBy, title);
+        trackList.appendChild(newTrackElement);
+
+        if (scrollToAddedItem) {
+            newTrackElement.scrollIntoView();
+        }
+    }
+
     socket.on('track list', function onTrackListRecieved(tracks) {
         trackList.innerHTML = "";
         tracks.forEach(function renderTrack(track) {
@@ -185,5 +194,63 @@
         }
 
         gapi.load('client', start);
+    });
+
+    function closeSearchDropdown(event) {
+        if (event.key == "Escape") {
+                            searchResultsList.innerHTML = "";
+                            searchResultsList.classList.remove("is-open");
+                            window.removeEventListener("keyup", closeSearchDropdown);
+                        };
+    }
+
+    var searchForm = document.getElementById("searchForm");
+    var searchResultsList = document.getElementById("searchResults");
+    searchForm.addEventListener("submit", function(event) {
+        event.preventDefault();
+        var searchPhrase = document.getElementById("searchInput").value;
+        if (searchPhrase) {
+            var request = gapi.client.youtube.search.list({
+                q: searchPhrase,
+                part: 'snippet'
+            });
+            request.execute(function(response) {
+                if (response.result) {
+                    searchResultsList.classList.add("is-open");
+                    window.addEventListener("keyup", closeSearchDropdown);
+
+                    response.result.items.forEach(function(resultItem) {
+                        var resultItemDOM = document.getElementById("searchResultTemplate").content.firstElementChild.cloneNode(true);
+                        resultItemDOM.querySelector(".track-thumbnail").src = resultItem.snippet.thumbnails.medium.url;
+                        resultItemDOM.querySelector(".track-info").textContent = resultItem.snippet.title;
+                        resultItemDOM.querySelector(".add-to-playlist").addEventListener("click", function(event) {
+                            addItemToPlaylist(resultItem.snippet.title, resultItem.id, userName, true);
+                        });
+                        searchResultsList.appendChild(resultItemDOM);
+                    });
+                }
+            });
+        }
+    });
+
+    var chatForm = document.getElementById("chatForm");
+    var messageInput = document.getElementById("messageInput");
+    var chatMessagesContainer = document.getElementById("chatMessages");
+    chatForm.addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        var message = messageInput.value;
+
+        if (message) {
+            socket.emit("chat message", message);
+            messageInput.value = "";
+        }
+    });
+
+    socket.on('chat message', function(data) {
+        var newMessageDOM = document.getElementById("chatMessageTemplate").content.firstElementChild.cloneNode(true);
+        newMessageDOM.querySelector(".chat-user-name").textContent = data.userName;
+        newMessageDOM.querySelector(".message-text").textContent = data.message;
+        chatMessagesContainer.appendChild(newMessageDOM);
     });
 })();

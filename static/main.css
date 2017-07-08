@@ -9,20 +9,20 @@ body {
 
 .container {
     display: flex;
+    flex-direction: column;
     height: 100%;
 }
 
 .control-panel {
     display: flex;
     flex-direction: column;
-    margin-right: 40px; 
+    width: 400px; 
 }
 
 .track-list {
     list-style: none;
-    background: rgb(232, 232, 232);
+    background: rgba(232, 232, 232, 0.65);
     padding-left: 0;
-    width: 400px;
     min-height: 200px;
     flex: 1 1 auto;
     margin: 0;
@@ -30,9 +30,20 @@ body {
 }
 
 .track {
-    padding: 8px 10px;
-    border-bottom: 1px solid rgb(208, 208, 208);
+    padding: 8px 10px 0 10px;
     box-sizing: border-box;
+}
+
+.track::after {
+    content: "";
+    display: block;
+    height: 1px;
+    background-color: rgb(208, 208, 208);
+    margin-top: 10px;
+}
+
+.track:last-child:after {
+    visibility: hidden;
 }
 
 .track:focus {
@@ -40,7 +51,7 @@ body {
 }
 
 .video-container {
-    margin: auto;
+    /*margin: auto;*/
 }
 
 .url-input {
@@ -51,6 +62,7 @@ body {
 
 .track-add-controls {
     display: flex;
+    flex: 0 0 auto;
 }
 
 .add-video-btn {
@@ -61,7 +73,7 @@ body {
 }
 
 .toolbar {
-    padding: 14px;
+    padding: 10px 5px 10px 5px;
     display: flex;
 }
 
@@ -71,6 +83,8 @@ body {
 
 .controls {
     background: gold;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.12);
+    position: relative;
 }
 
 .user-badge {
@@ -80,9 +94,8 @@ body {
 }
 
 .user-info {
-    position: absolute;
-    top: 10px;
-    right: 10px;
+    margin-left: auto;
+    color: white;
 }
 
 .video-title {
@@ -128,4 +141,132 @@ body {
 
 .btn-pause {
     background-image: url("icons/pause.svg");
+}
+
+.playlist-title {
+    font-size: 18px;
+    padding: 5px 5px 0 12px;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+}
+
+.main-area {
+    display: flex;
+    flex-direction: column;
+}
+
+.chat {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-form {
+    display: flex;
+}
+
+.message-input {
+    flex: 1 1 auto;
+    height: 20px;
+    margin: 0;
+}
+
+.chat-messages {
+    flex: 1 1 auto;
+    background: rgba(229, 242, 255, 0.46);
+    padding: 5px;
+    font-size: 12px;
+}
+
+.chat-user-name {
+    font-weight: bold;
+}
+
+.chat-user-name::after {
+    content: ":";
+}
+
+.app-header {
+    background: orange;
+    position: relative;
+}
+
+.app-content {
+    flex: 1 1 auto;
+    display: flex;
+}
+
+.search {
+    padding: 5px;
+    width: 500px;
+}
+
+.search-form {
+    display: flex;
+}
+
+.search-results {
+    display: none;
+    margin: 0;
+    position: absolute;
+    z-index: 1;
+    top: 100%;
+    left: 0;
+    max-height: calc(100vh - 30px);
+    overflow: auto;
+    background: white;
+    padding: 0;
+    width: 500px;
+    box-shadow: 1px 4px 4px 0 rgba(0, 0, 0, 0.31)
+}
+
+.search-results.is-open {
+    display: block;
+}
+
+.search-result {
+    display: flex;
+    align-items: center;
+    padding: 10px 5px;
+}
+
+.search-result:hover {
+    background: rgba(255, 182, 0, 0.26);
+}
+
+.search-result:hover .add-to-playlist {
+    visibility: visible;
+}
+
+.track-info {
+    font-size: 14px;
+}
+
+.track-thumbnail {
+    width: 90px;
+    margin-right: 10px;
+}
+
+.search-input {
+    flex: 0 0 395px;
+    height: 20px;
+    margin: 0;
+    background: rgb(255, 209, 124);
+    border: none;
+}
+
+.search-input:focus {
+    background: white;
+}
+
+.add-to-playlist {
+    margin-left: auto;
+    visibility: hidden;
+}
+
+.app-header-inner {
+    width: 1000px;
+    position: relative;
+    display: flex;
+    align-items: center;
 }

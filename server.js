@@ -24,6 +24,11 @@ io.on('connection', function(socket) {
         console.log('A new track was added', data);
     });
 
+    socket.on('chat message', function(message) {
+        io.emit('chat message', {userName: userName, message: message});
+        console.log('New message from ' + userName + ': ' + message);
+    });
+
     socket.on('disconnect', function(reason) {
         let userIndex = users.indexOf(userName);
         if (userIndex >= 0) {
