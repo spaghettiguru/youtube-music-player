@@ -65,10 +65,11 @@
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__playlist_js__ = __webpack_require__(1);
     
 
     var userName = window.prompt("What's your name?", "anonymous");
@@ -142,14 +143,6 @@
         //}
     }
 
-    function createTrackDOMStructure(url, userName, title) {
-        var newTrackElement = document.getElementById("trackItemTemplate").content.firstElementChild.cloneNode(true);
-            newTrackElement.querySelector(".video-title").textContent = title ? title : url;
-            newTrackElement.querySelector(".user-badge").textContent = "[" + userName + "]";
-            newTrackElement.dataset.videoId = url.match(/youtube.com\/watch\?v=(.*)&?/)[1].split("&")[0];
-        return newTrackElement;
-    }
-
     var urlInput = document.getElementById("videoURLInput");
     var addVideoButton = document.getElementById("addVideoBtn");
 
@@ -192,10 +185,8 @@
     });
 
     socket.on('track added', function onTrackAdded(trackData) {
-            var newTrackElement = createTrackDOMStructure(trackData.url, trackData.addedBy);
-            trackList.appendChild(newTrackElement);
+            var newTrackElement = __WEBPACK_IMPORTED_MODULE_0__playlist_js__["a" /* default */].addItemToPlaylist(null, trackData.url, trackData.addedBy, true);
             urlInput.value = "";
-            newTrackElement.scrollIntoView();
 
             getVideosInfoByIds(newTrackElement.dataset.videoId).then(function(videos) {
                 newTrackElement.querySelector(".video-title").textContent = videos[0].snippet['title'];
@@ -206,19 +197,11 @@
             }
     });
 
-    function addItemToPlaylist(title, playbackURL, addedBy, scrollToAddedItem) {
-        var newTrackElement = createTrackDOMStructure(playbackURL, addedBy, title);
-        trackList.appendChild(newTrackElement);
-
-        if (scrollToAddedItem) {
-            newTrackElement.scrollIntoView();
-        }
-    }
-
     socket.on('track list', function onTrackListRecieved(tracks) {
         trackList.innerHTML = "";
         tracks.forEach(function renderTrack(track) {
-            trackList.appendChild(createTrackDOMStructure(track.url, track.addedBy));
+            __WEBPACK_IMPORTED_MODULE_0__playlist_js__["a" /* default */].addItemToPlaylist(null, track.url, track.addedBy, false);
+            //trackList.appendChild(playlist.createTrackDOMStructure(track.url, track.addedBy));
         });
         youtubeAPIReady.then(getAllTracksNames);
         console.log(tracks);
@@ -293,7 +276,7 @@
                         resultItemDOM.querySelector(".track-thumbnail").src = resultItem.snippet.thumbnails.medium.url;
                         resultItemDOM.querySelector(".track-info").textContent = resultItem.snippet.title;
                         resultItemDOM.querySelector(".add-to-playlist").addEventListener("click", function(event) {
-                            addItemToPlaylist(resultItem.snippet.title, resultItem.id, userName, true);
+                            __WEBPACK_IMPORTED_MODULE_0__playlist_js__["a" /* default */].addItemToPlaylist(resultItem.snippet.title, resultItem.id, userName, true);
                         });
                         searchResultsList.appendChild(resultItemDOM);
                     });
@@ -322,6 +305,42 @@
         newMessageDOM.querySelector(".message-text").textContent = data.message;
         chatMessagesContainer.appendChild(newMessageDOM);
     });
+
+/***/ }),
+/* 1 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* unused harmony export currentTrackIndex */
+/* unused harmony export createTrackDOMStructure */
+/* unused harmony export addItemToPlaylist */
+var trackList = document.getElementById("trackList");
+var currentTrackIndex = 0;
+
+function createTrackDOMStructure(url, userName, title) {
+        var newTrackElement = document.getElementById("trackItemTemplate").content.firstElementChild.cloneNode(true);
+            newTrackElement.querySelector(".video-title").textContent = title ? title : url;
+            newTrackElement.querySelector(".user-badge").textContent = "[" + userName + "]";
+            newTrackElement.dataset.videoId = url.match(/youtube.com\/watch\?v=(.*)&?/)[1].split("&")[0];
+        return newTrackElement;
+    }
+
+function addItemToPlaylist(title, playbackURL, addedBy, scrollToAddedItem) {
+        var newTrackElement = createTrackDOMStructure(playbackURL, addedBy, title);
+        trackList.appendChild(newTrackElement);
+
+        if (scrollToAddedItem) {
+            newTrackElement.scrollIntoView();
+        }
+
+        return newTrackElement;
+    }
+
+/* harmony default export */ __webpack_exports__["a"] = ({
+    createTrackDOMStructure,
+    addItemToPlaylist,
+    currentTrackIndex
+});
 
 /***/ })
 /******/ ]);

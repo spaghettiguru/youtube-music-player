@@ -95,6 +95,7 @@ body {
 
 .user-info {
     margin-left: auto;
+    color: rgb(253, 255, 73);
 }
 
 .video-title {
@@ -186,7 +187,7 @@ body {
 }
 
 .app-header {
-    background: orange;
+    background: rgb(255, 147, 40);
     position: relative;
 }
 

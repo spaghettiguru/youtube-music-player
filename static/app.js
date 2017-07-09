@@ -1,4 +1,4 @@
-    "use strict";
+    import playlist from './playlist.js';
 
     var userName = window.prompt("What's your name?", "anonymous");
     var userInfoElement = document.querySelector(".user-info");
@@ -71,14 +71,6 @@
         //}
     }
 
-    function createTrackDOMStructure(url, userName, title) {
-        var newTrackElement = document.getElementById("trackItemTemplate").content.firstElementChild.cloneNode(true);
-            newTrackElement.querySelector(".video-title").textContent = title ? title : url;
-            newTrackElement.querySelector(".user-badge").textContent = "[" + userName + "]";
-            newTrackElement.dataset.videoId = url.match(/youtube.com\/watch\?v=(.*)&?/)[1].split("&")[0];
-        return newTrackElement;
-    }
-
     var urlInput = document.getElementById("videoURLInput");
     var addVideoButton = document.getElementById("addVideoBtn");
 
@@ -121,10 +113,8 @@
     });
 
     socket.on('track added', function onTrackAdded(trackData) {
-            var newTrackElement = createTrackDOMStructure(trackData.url, trackData.addedBy);
-            trackList.appendChild(newTrackElement);
+            var newTrackElement = playlist.addItemToPlaylist(null, trackData.url, trackData.addedBy, true);
             urlInput.value = "";
-            newTrackElement.scrollIntoView();
 
             getVideosInfoByIds(newTrackElement.dataset.videoId).then(function(videos) {
                 newTrackElement.querySelector(".video-title").textContent = videos[0].snippet['title'];
@@ -135,19 +125,10 @@
             }
     });
 
-    function addItemToPlaylist(title, playbackURL, addedBy, scrollToAddedItem) {
-        var newTrackElement = createTrackDOMStructure(playbackURL, addedBy, title);
-        trackList.appendChild(newTrackElement);
-
-        if (scrollToAddedItem) {
-            newTrackElement.scrollIntoView();
-        }
-    }
-
     socket.on('track list', function onTrackListRecieved(tracks) {
         trackList.innerHTML = "";
         tracks.forEach(function renderTrack(track) {
-            trackList.appendChild(createTrackDOMStructure(track.url, track.addedBy));
+            playlist.addItemToPlaylist(null, track.url, track.addedBy, false);
         });
         youtubeAPIReady.then(getAllTracksNames);
         console.log(tracks);
@@ -222,7 +203,7 @@
                         resultItemDOM.querySelector(".track-thumbnail").src = resultItem.snippet.thumbnails.medium.url;
                         resultItemDOM.querySelector(".track-info").textContent = resultItem.snippet.title;
                         resultItemDOM.querySelector(".add-to-playlist").addEventListener("click", function(event) {
-                            addItemToPlaylist(resultItem.snippet.title, resultItem.id, userName, true);
+                            playlist.addItemToPlaylist(resultItem.snippet.title, resultItem.id, userName, true);
                         });
                         searchResultsList.appendChild(resultItemDOM);
                     });
