@@ -185,7 +185,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     });
 
     socket.on('track added', function onTrackAdded(trackData) {
-            var newTrackElement = __WEBPACK_IMPORTED_MODULE_0__playlist_js__["a" /* default */].addItemToPlaylist(null, trackData.url, trackData.addedBy, true);
+            var newTrackElement = __WEBPACK_IMPORTED_MODULE_0__playlist_js__["a" /* default */].addTrack(null, trackData.url, trackData.addedBy, true);
             urlInput.value = "";
 
             getVideosInfoByIds(newTrackElement.dataset.videoId).then(function(videos) {
@@ -200,8 +200,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     socket.on('track list', function onTrackListRecieved(tracks) {
         trackList.innerHTML = "";
         tracks.forEach(function renderTrack(track) {
-            __WEBPACK_IMPORTED_MODULE_0__playlist_js__["a" /* default */].addItemToPlaylist(null, track.url, track.addedBy, false);
-            //trackList.appendChild(playlist.createTrackDOMStructure(track.url, track.addedBy));
+            __WEBPACK_IMPORTED_MODULE_0__playlist_js__["a" /* default */].addTrack(null, track.url, track.addedBy, false);
         });
         youtubeAPIReady.then(getAllTracksNames);
         console.log(tracks);
@@ -276,7 +275,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                         resultItemDOM.querySelector(".track-thumbnail").src = resultItem.snippet.thumbnails.medium.url;
                         resultItemDOM.querySelector(".track-info").textContent = resultItem.snippet.title;
                         resultItemDOM.querySelector(".add-to-playlist").addEventListener("click", function(event) {
-                            __WEBPACK_IMPORTED_MODULE_0__playlist_js__["a" /* default */].addItemToPlaylist(resultItem.snippet.title, resultItem.id, userName, true);
+                            __WEBPACK_IMPORTED_MODULE_0__playlist_js__["a" /* default */].addTrack(resultItem.snippet.title, resultItem.id, userName, true);
                         });
                         searchResultsList.appendChild(resultItemDOM);
                     });
@@ -313,7 +312,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 "use strict";
 /* unused harmony export currentTrackIndex */
 /* unused harmony export createTrackDOMStructure */
-/* unused harmony export addItemToPlaylist */
+/* unused harmony export addTrack */
 var trackList = document.getElementById("trackList");
 var currentTrackIndex = 0;
 
@@ -325,7 +324,7 @@ function createTrackDOMStructure(url, userName, title) {
         return newTrackElement;
     }
 
-function addItemToPlaylist(title, playbackURL, addedBy, scrollToAddedItem) {
+function addTrack(title, playbackURL, addedBy, scrollToAddedItem) {
         var newTrackElement = createTrackDOMStructure(playbackURL, addedBy, title);
         trackList.appendChild(newTrackElement);
 
@@ -338,7 +337,7 @@ function addItemToPlaylist(title, playbackURL, addedBy, scrollToAddedItem) {
 
 /* harmony default export */ __webpack_exports__["a"] = ({
     createTrackDOMStructure,
-    addItemToPlaylist,
+    addTrack,
     currentTrackIndex
 });
 

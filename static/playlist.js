@@ -9,7 +9,7 @@ export function createTrackDOMStructure(url, userName, title) {
         return newTrackElement;
     }
 
-export  function addItemToPlaylist(title, playbackURL, addedBy, scrollToAddedItem) {
+export function addTrack(title, playbackURL, addedBy, scrollToAddedItem) {
         var newTrackElement = createTrackDOMStructure(playbackURL, addedBy, title);
         trackList.appendChild(newTrackElement);
 
@@ -22,6 +22,6 @@ export  function addItemToPlaylist(title, playbackURL, addedBy, scrollToAddedIte
 
 export default {
     createTrackDOMStructure,
-    addItemToPlaylist,
+    addTrack,
     currentTrackIndex
 }
