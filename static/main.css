@@ -38,7 +38,7 @@ body {
     content: "";
     display: block;
     height: 1px;
-    background-color: rgb(208, 208, 208);
+    background-color: rgb(216, 216, 216);
     margin-top: 10px;
 }
 
@@ -96,6 +96,7 @@ body {
 .user-info {
     margin-left: auto;
     color: rgb(253, 255, 73);
+    font-size: 14px;
 }
 
 .video-title {
@@ -269,4 +270,10 @@ body {
     position: relative;
     display: flex;
     align-items: center;
+}
+
+.send-msg-button {
+    background: #00adff;
+    border: none;
+    color: white;
 }
