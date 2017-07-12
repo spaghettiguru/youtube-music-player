@@ -70,11 +70,13 @@
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__playlist_js__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__chat_js__ = __webpack_require__(2);
+    
     
 
     var userName = window.prompt("What's your name?", "anonymous");
-    var userInfoElement = document.querySelector(".user-info");
-    userInfoElement.innerHTML = `Shalom, <span class="user-name">${userName}</span>!`;
+    var userNameElement = document.getElementById("userName");
+    userNameElement.textContent = userName;
 
     if (window.Notification && Notification.permission !== "granted") {
         Notification.requestPermission();
@@ -87,7 +89,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         //transports: ['websocket']
     });
 
-    var currentTrackIndex = 0;
     var trackList;
 
     // ----- Youtube player initialization code here -----
@@ -110,9 +111,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     }
 
     function onPlayerStateChange(event) {
+        var currentTrackIndex = __WEBPACK_IMPORTED_MODULE_0__playlist_js__["a" /* default */].getCurrentTrackIndex();
         if (event.data == YT.PlayerState.ENDED && trackList.children.length - 1 > currentTrackIndex) {
             player.loadVideoById(trackList.children[currentTrackIndex + 1].dataset.videoId);
-            selectTrack(currentTrackIndex + 1);
+            __WEBPACK_IMPORTED_MODULE_0__playlist_js__["a" /* default */].selectTrack(currentTrackIndex + 1);
         }
     }
     function stopVideo() {
@@ -128,20 +130,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             trackItem = trackItem.parentNode;
         }
 
-        var videoId= trackItem.dataset.videoId;
+        var videoId = trackItem.dataset.videoId;
         if (videoId) {
             player.loadVideoById(trackItem.dataset.videoId);
-            selectTrack(Array.from(trackList.children).indexOf(trackItem));
+            __WEBPACK_IMPORTED_MODULE_0__playlist_js__["a" /* default */].selectTrack(Array.from(trackList.children).indexOf(trackItem));
         }
     });
-
-    function selectTrack(trackNumber) {
-        //if (trackNumber !== currentTrackIndex) {
-            trackList.children[currentTrackIndex].classList.remove("selected");
-            currentTrackIndex = trackNumber;
-            trackList.children[trackNumber].classList.add("selected");
-        //}
-    }
 
     var urlInput = document.getElementById("videoURLInput");
     var addVideoButton = document.getElementById("addVideoBtn");
@@ -160,9 +154,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         var isPlaying = player.getPlayerState() == 1;
         if (isPaused) {
             player.playVideo();
-        } else if (!isPlaying) {
+        } else if (!isPlaying) { // play button pressed for the first time
+            var currentTrackIndex = __WEBPACK_IMPORTED_MODULE_0__playlist_js__["a" /* default */].getCurrentTrackIndex();
             player.loadVideoById(trackList.children[currentTrackIndex].dataset.videoId);
-            selectTrack(currentTrackIndex);
+            __WEBPACK_IMPORTED_MODULE_0__playlist_js__["a" /* default */].selectTrack(currentTrackIndex);
         }
     });
 
@@ -171,16 +166,18 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     });
 
     document.getElementById("nextBtn").addEventListener("click", function nextBtnClickHandler(event) {
+        var currentTrackIndex = __WEBPACK_IMPORTED_MODULE_0__playlist_js__["a" /* default */].getCurrentTrackIndex();
         if (currentTrackIndex < trackList.children.length - 1) {
             player.loadVideoById(trackList.children[currentTrackIndex + 1].dataset.videoId);
-            selectTrack(currentTrackIndex + 1);
+            __WEBPACK_IMPORTED_MODULE_0__playlist_js__["a" /* default */].selectTrack(currentTrackIndex + 1);
         }
     });
 
     document.getElementById("prevBtn").addEventListener("click", function prevBtnClickHandler(event) {
+        var currentTrackIndex = __WEBPACK_IMPORTED_MODULE_0__playlist_js__["a" /* default */].getCurrentTrackIndex();
         if (currentTrackIndex > 0) {
             player.loadVideoById(trackList.children[currentTrackIndex - 1].dataset.videoId);
-            selectTrack(currentTrackIndex - 1);
+            __WEBPACK_IMPORTED_MODULE_0__playlist_js__["a" /* default */].selectTrack(currentTrackIndex - 1);
         }
     });
 
@@ -203,7 +200,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             __WEBPACK_IMPORTED_MODULE_0__playlist_js__["a" /* default */].addTrack(null, track.url, track.addedBy, false);
         });
         youtubeAPIReady.then(getAllTracksNames);
-        console.log(tracks);
     });
 
     function getAllTracksNames() {
@@ -284,25 +280,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         }
     });
 
-    var chatForm = document.getElementById("chatForm");
-    var messageInput = document.getElementById("messageInput");
-    var chatMessagesContainer = document.getElementById("chatMessages");
-    chatForm.addEventListener("submit", function(event) {
-        event.preventDefault();
-
-        var message = messageInput.value;
-
-        if (message) {
-            socket.emit("chat message", message);
-            messageInput.value = "";
-        }
+    __WEBPACK_IMPORTED_MODULE_1__chat_js__["a" /* default */].onSendMessage(function(message) {
+        socket.emit("chat message", message);
     });
 
     socket.on('chat message', function(data) {
-        var newMessageDOM = document.getElementById("chatMessageTemplate").content.firstElementChild.cloneNode(true);
-        newMessageDOM.querySelector(".chat-user-name").textContent = data.userName;
-        newMessageDOM.querySelector(".message-text").textContent = data.message;
-        chatMessagesContainer.appendChild(newMessageDOM);
+        __WEBPACK_IMPORTED_MODULE_1__chat_js__["a" /* default */].addMessage(data.message, data.userName);
     });
 
 /***/ }),
@@ -310,35 +293,102 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* unused harmony export currentTrackIndex */
 /* unused harmony export createTrackDOMStructure */
 /* unused harmony export addTrack */
+/* unused harmony export selectTrack */
+/* unused harmony export getCurrentTrackIndex */
+/* unused harmony export getTotalTracks */
+/* unused harmony export getTrackByIndex */
+
 var trackList = document.getElementById("trackList");
 var currentTrackIndex = 0;
 
 function createTrackDOMStructure(url, userName, title) {
-        var newTrackElement = document.getElementById("trackItemTemplate").content.firstElementChild.cloneNode(true);
-            newTrackElement.querySelector(".video-title").textContent = title ? title : url;
-            newTrackElement.querySelector(".user-badge").textContent = "[" + userName + "]";
-            newTrackElement.dataset.videoId = url.match(/youtube.com\/watch\?v=(.*)&?/)[1].split("&")[0];
-        return newTrackElement;
-    }
+    var newTrackElement = document.getElementById("trackItemTemplate").content.firstElementChild.cloneNode(true);
+    newTrackElement.querySelector(".video-title").textContent = title ? title : url;
+    newTrackElement.querySelector(".user-badge").textContent = "[" + userName + "]";
+    newTrackElement.dataset.videoId = url.match(/youtube.com\/watch\?v=(.*)&?/)[1].split("&")[0];
+    return newTrackElement;
+}
 
 function addTrack(title, playbackURL, addedBy, scrollToAddedItem) {
-        var newTrackElement = createTrackDOMStructure(playbackURL, addedBy, title);
-        trackList.appendChild(newTrackElement);
+    var newTrackElement = createTrackDOMStructure(playbackURL, addedBy, title);
+    trackList.appendChild(newTrackElement);
 
-        if (scrollToAddedItem) {
-            newTrackElement.scrollIntoView();
-        }
-
-        return newTrackElement;
+    if (scrollToAddedItem) {
+        newTrackElement.scrollIntoView();
     }
+
+    return newTrackElement;
+}
+
+function selectTrack(trackNumber) {
+    //if (trackNumber !== currentTrackIndex) {
+    trackList.children[currentTrackIndex].classList.remove("selected");
+    currentTrackIndex = trackNumber;
+    trackList.children[trackNumber].classList.add("selected");
+    //}
+}
+
+function getCurrentTrackIndex() {
+    return currentTrackIndex;
+}
+
+function getTotalTracks() {
+    return trackList.children.length;
+}
+
+function getTrackByIndex(index) {
+    return trackList.children[index];
+}
 
 /* harmony default export */ __webpack_exports__["a"] = ({
     createTrackDOMStructure,
     addTrack,
-    currentTrackIndex
+    currentTrackIndex,
+    selectTrack,
+    getTotalTracks,
+    getTrackByIndex,
+    getCurrentTrackIndex
+});
+
+/***/ }),
+/* 2 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* unused harmony export onSendMessage */
+/* unused harmony export addMessage */
+var chatForm = document.getElementById("chatForm");
+var messageInput = document.getElementById("messageInput");
+var chatMessagesContainer = document.getElementById("chatMessages");
+var sendMessageCallback = function() {};
+
+chatForm.addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        var message = messageInput.value;
+
+        if (message) {
+            sendMessageCallback(message);
+            messageInput.value = "";
+        }
+    });
+
+function onSendMessage(callback) {
+    sendMessageCallback = callback;
+}
+
+function addMessage(message, userName) {
+    var newMessageDOM = document.getElementById("chatMessageTemplate").content.firstElementChild.cloneNode(true);
+        newMessageDOM.querySelector(".chat-user-name").textContent = userName;
+        newMessageDOM.querySelector(".message-text").textContent = message;
+        chatMessagesContainer.appendChild(newMessageDOM);
+}
+
+/* harmony default export */ __webpack_exports__["a"] = ({
+    onSendMessage,
+    addMessage
 });
 
 /***/ })

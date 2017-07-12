@@ -1,8 +1,9 @@
     import playlist from './playlist.js';
+    import chat from './chat.js';
 
     var userName = window.prompt("What's your name?", "anonymous");
-    var userInfoElement = document.querySelector(".user-info");
-    userInfoElement.innerHTML = `Shalom, <span class="user-name">${userName}</span>!`;
+    var userNameElement = document.getElementById("userName");
+    userNameElement.textContent = userName;
 
     if (window.Notification && Notification.permission !== "granted") {
         Notification.requestPermission();
@@ -15,7 +16,6 @@
         //transports: ['websocket']
     });
 
-    var currentTrackIndex = 0;
     var trackList;
 
     // ----- Youtube player initialization code here -----
@@ -38,9 +38,10 @@
     }
 
     function onPlayerStateChange(event) {
+        var currentTrackIndex = playlist.getCurrentTrackIndex();
         if (event.data == YT.PlayerState.ENDED && trackList.children.length - 1 > currentTrackIndex) {
             player.loadVideoById(trackList.children[currentTrackIndex + 1].dataset.videoId);
-            selectTrack(currentTrackIndex + 1);
+            playlist.selectTrack(currentTrackIndex + 1);
         }
     }
     function stopVideo() {
@@ -56,20 +57,12 @@
             trackItem = trackItem.parentNode;
         }
 
-        var videoId= trackItem.dataset.videoId;
+        var videoId = trackItem.dataset.videoId;
         if (videoId) {
             player.loadVideoById(trackItem.dataset.videoId);
-            selectTrack(Array.from(trackList.children).indexOf(trackItem));
+            playlist.selectTrack(Array.from(trackList.children).indexOf(trackItem));
         }
     });
-
-    function selectTrack(trackNumber) {
-        //if (trackNumber !== currentTrackIndex) {
-            trackList.children[currentTrackIndex].classList.remove("selected");
-            currentTrackIndex = trackNumber;
-            trackList.children[trackNumber].classList.add("selected");
-        //}
-    }
 
     var urlInput = document.getElementById("videoURLInput");
     var addVideoButton = document.getElementById("addVideoBtn");
@@ -88,9 +81,10 @@
         var isPlaying = player.getPlayerState() == 1;
         if (isPaused) {
             player.playVideo();
-        } else if (!isPlaying) {
+        } else if (!isPlaying) { // play button pressed for the first time
+            var currentTrackIndex = playlist.getCurrentTrackIndex();
             player.loadVideoById(trackList.children[currentTrackIndex].dataset.videoId);
-            selectTrack(currentTrackIndex);
+            playlist.selectTrack(currentTrackIndex);
         }
     });
 
@@ -99,16 +93,18 @@
     });
 
     document.getElementById("nextBtn").addEventListener("click", function nextBtnClickHandler(event) {
+        var currentTrackIndex = playlist.getCurrentTrackIndex();
         if (currentTrackIndex < trackList.children.length - 1) {
             player.loadVideoById(trackList.children[currentTrackIndex + 1].dataset.videoId);
-            selectTrack(currentTrackIndex + 1);
+            playlist.selectTrack(currentTrackIndex + 1);
         }
     });
 
     document.getElementById("prevBtn").addEventListener("click", function prevBtnClickHandler(event) {
+        var currentTrackIndex = playlist.getCurrentTrackIndex();
         if (currentTrackIndex > 0) {
             player.loadVideoById(trackList.children[currentTrackIndex - 1].dataset.videoId);
-            selectTrack(currentTrackIndex - 1);
+            playlist.selectTrack(currentTrackIndex - 1);
         }
     });
 
@@ -131,7 +127,6 @@
             playlist.addTrack(null, track.url, track.addedBy, false);
         });
         youtubeAPIReady.then(getAllTracksNames);
-        console.log(tracks);
     });
 
     function getAllTracksNames() {
@@ -212,23 +207,10 @@
         }
     });
 
-    var chatForm = document.getElementById("chatForm");
-    var messageInput = document.getElementById("messageInput");
-    var chatMessagesContainer = document.getElementById("chatMessages");
-    chatForm.addEventListener("submit", function(event) {
-        event.preventDefault();
-
-        var message = messageInput.value;
-
-        if (message) {
-            socket.emit("chat message", message);
-            messageInput.value = "";
-        }
+    chat.onSendMessage(function(message) {
+        socket.emit("chat message", message);
     });
 
     socket.on('chat message', function(data) {
-        var newMessageDOM = document.getElementById("chatMessageTemplate").content.firstElementChild.cloneNode(true);
-        newMessageDOM.querySelector(".chat-user-name").textContent = data.userName;
-        newMessageDOM.querySelector(".message-text").textContent = data.message;
-        chatMessagesContainer.appendChild(newMessageDOM);
+        chat.addMessage(data.message, data.userName);
     });
