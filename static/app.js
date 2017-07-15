@@ -69,10 +69,10 @@
 
     document.getElementById("trackAddForm").addEventListener("submit", function addToPlaylist(event) {
         event.preventDefault();
-        var videoURL = urlInput.value;
+        var videoID = urlInput.value.match(/youtube.com\/watch\?v=(.*)&?/)[1].split("&")[0];
         
-        if (videoURL) {
-            socket.emit("add track", {url: videoURL, addedBy: userName});
+        if (videoID) {
+            socket.emit("add track", {url: videoID, addedBy: userName});
         }
     });
 
@@ -198,7 +198,10 @@
                         resultItemDOM.querySelector(".track-thumbnail").src = resultItem.snippet.thumbnails.medium.url;
                         resultItemDOM.querySelector(".track-info").textContent = resultItem.snippet.title;
                         resultItemDOM.querySelector(".add-to-playlist").addEventListener("click", function(event) {
-                            playlist.addTrack(resultItem.snippet.title, resultItem.id, userName, true);
+                            event.stopPropagation();
+                            socket.emit("add track", {url: resultItem.id.videoId, addedBy: userName});
+                            //playlist.addTrack(resultItem.snippet.title, resultItem.id.videoId, userName, true);
+                            searchResultsList.classList.remove("is-open");
                         });
                         searchResultsList.appendChild(resultItemDOM);
                     });

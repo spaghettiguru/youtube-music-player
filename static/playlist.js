@@ -1,24 +1,18 @@
+import {RenderableMediaTrack} from 'babel-loader!./MediaTrack.js';
 
 var trackList = document.getElementById("trackList");
 var currentTrackIndex = 0;
 
-export function createTrackDOMStructure(url, userName, title) {
-    var newTrackElement = document.getElementById("trackItemTemplate").content.firstElementChild.cloneNode(true);
-    newTrackElement.querySelector(".video-title").textContent = title ? title : url;
-    newTrackElement.querySelector(".user-badge").textContent = "[" + userName + "]";
-    newTrackElement.dataset.videoId = url.match(/youtube.com\/watch\?v=(.*)&?/)[1].split("&")[0];
-    return newTrackElement;
-}
-
-export function addTrack(title, playbackURL, addedBy, scrollToAddedItem) {
-    var newTrackElement = createTrackDOMStructure(playbackURL, addedBy, title);
-    trackList.appendChild(newTrackElement);
+export function addTrack(title, id, addedBy, scrollToAddedItem) {
+    var newTrack = new RenderableMediaTrack(title, addedBy, id);
+    var newTrackDOM = newTrack.render();
+    trackList.appendChild(newTrackDOM);
 
     if (scrollToAddedItem) {
-        newTrackElement.scrollIntoView();
+        newTrackDOM.scrollIntoView();
     }
 
-    return newTrackElement;
+    return newTrackDOM;
 }
 
 export function selectTrack(trackNumber) {
@@ -42,7 +36,6 @@ export function getTrackByIndex(index) {
 }
 
 export default {
-    createTrackDOMStructure,
     addTrack,
     currentTrackIndex,
     selectTrack,

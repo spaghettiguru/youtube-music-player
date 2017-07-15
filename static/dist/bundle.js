@@ -70,7 +70,7 @@
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__playlist_js__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__chat_js__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__chat_js__ = __webpack_require__(3);
     
     
 
@@ -142,10 +142,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
     document.getElementById("trackAddForm").addEventListener("submit", function addToPlaylist(event) {
         event.preventDefault();
-        var videoURL = urlInput.value;
+        var videoID = urlInput.value.match(/youtube.com\/watch\?v=(.*)&?/)[1].split("&")[0];
         
-        if (videoURL) {
-            socket.emit("add track", {url: videoURL, addedBy: userName});
+        if (videoID) {
+            socket.emit("add track", {url: videoID, addedBy: userName});
         }
     });
 
@@ -271,7 +271,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                         resultItemDOM.querySelector(".track-thumbnail").src = resultItem.snippet.thumbnails.medium.url;
                         resultItemDOM.querySelector(".track-info").textContent = resultItem.snippet.title;
                         resultItemDOM.querySelector(".add-to-playlist").addEventListener("click", function(event) {
-                            __WEBPACK_IMPORTED_MODULE_0__playlist_js__["a" /* default */].addTrack(resultItem.snippet.title, resultItem.id, userName, true);
+                            event.stopPropagation();
+                            socket.emit("add track", {url: resultItem.id.videoId, addedBy: userName});
+                            //playlist.addTrack(resultItem.snippet.title, resultItem.id.videoId, userName, true);
+                            searchResultsList.classList.remove("is-open");
                         });
                         searchResultsList.appendChild(resultItemDOM);
                     });
@@ -293,33 +296,28 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* unused harmony export createTrackDOMStructure */
 /* unused harmony export addTrack */
 /* unused harmony export selectTrack */
 /* unused harmony export getCurrentTrackIndex */
 /* unused harmony export getTotalTracks */
 /* unused harmony export getTrackByIndex */
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_loader_MediaTrack_js__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_loader_MediaTrack_js___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_babel_loader_MediaTrack_js__);
+
 
 var trackList = document.getElementById("trackList");
 var currentTrackIndex = 0;
 
-function createTrackDOMStructure(url, userName, title) {
-    var newTrackElement = document.getElementById("trackItemTemplate").content.firstElementChild.cloneNode(true);
-    newTrackElement.querySelector(".video-title").textContent = title ? title : url;
-    newTrackElement.querySelector(".user-badge").textContent = "[" + userName + "]";
-    newTrackElement.dataset.videoId = url.match(/youtube.com\/watch\?v=(.*)&?/)[1].split("&")[0];
-    return newTrackElement;
-}
-
-function addTrack(title, playbackURL, addedBy, scrollToAddedItem) {
-    var newTrackElement = createTrackDOMStructure(playbackURL, addedBy, title);
-    trackList.appendChild(newTrackElement);
+function addTrack(title, id, addedBy, scrollToAddedItem) {
+    var newTrack = new __WEBPACK_IMPORTED_MODULE_0_babel_loader_MediaTrack_js__["RenderableMediaTrack"](title, addedBy, id);
+    var newTrackDOM = newTrack.render();
+    trackList.appendChild(newTrackDOM);
 
     if (scrollToAddedItem) {
-        newTrackElement.scrollIntoView();
+        newTrackDOM.scrollIntoView();
     }
 
-    return newTrackElement;
+    return newTrackDOM;
 }
 
 function selectTrack(trackNumber) {
@@ -343,7 +341,6 @@ function getTrackByIndex(index) {
 }
 
 /* harmony default export */ __webpack_exports__["a"] = ({
-    createTrackDOMStructure,
     addTrack,
     currentTrackIndex,
     selectTrack,
@@ -354,6 +351,68 @@ function getTrackByIndex(index) {
 
 /***/ }),
 /* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var MediaTrack = exports.MediaTrack = function MediaTrack(title, addedBy, mediaObjID) {
+    _classCallCheck(this, MediaTrack);
+
+    this.title = title;
+    this.playbackToken = mediaObjID;
+    this.addedBy = addedBy;
+    this.source = "youtube";
+};
+
+var RenderableMediaTrack = exports.RenderableMediaTrack = function (_MediaTrack) {
+    _inherits(RenderableMediaTrack, _MediaTrack);
+
+    function RenderableMediaTrack(title, addedBy, url) {
+        _classCallCheck(this, RenderableMediaTrack);
+
+        return _possibleConstructorReturn(this, (RenderableMediaTrack.__proto__ || Object.getPrototypeOf(RenderableMediaTrack)).call(this, title, addedBy, url));
+    }
+
+    _createClass(RenderableMediaTrack, [{
+        key: "createDOMStructure",
+        value: function createDOMStructure(url, userName, title) {
+            var newTrackElement = document.getElementById("trackItemTemplate").content.firstElementChild.cloneNode(true);
+            newTrackElement.querySelector(".video-title").textContent = title ? title : url;
+            newTrackElement.querySelector(".user-badge").textContent = "[" + userName + "]";
+            newTrackElement.dataset.videoId = this.playbackToken;
+            return newTrackElement;
+        }
+    }, {
+        key: "render",
+        value: function render() {
+            if (!this.domRef) {
+                this.domRef = this.createDOMStructure(this.playbackToken, this.addedBy, this.title);
+            }
+
+            return this.domRef;
+        }
+    }]);
+
+    return RenderableMediaTrack;
+}(MediaTrack);
+
+exports.default = { MediaTrack: MediaTrack, RenderableMediaTrack: RenderableMediaTrack };
+
+/***/ }),
+/* 3 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
